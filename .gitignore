@@ -1,0 +1,8 @@
+# Compiled class files
+bin/
+# User data
+programData
+# Eclipse-specific files
+.classpath
+.project
+.settings/
