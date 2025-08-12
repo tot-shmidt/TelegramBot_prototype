@@ -16,10 +16,10 @@ public class Main {
 	
 	
 	public static void main(String[] args) {
-		/**
+		
 		String workingDir = System.getProperty("user.dir");
 	    System.out.println("My Current Working Directory is: " + workingDir);
-	    */
+	    
 		
 		// STARTUP: Load all the date from the files into memory.
 		List<Student> studentsList = dataManager.loadStudents();
