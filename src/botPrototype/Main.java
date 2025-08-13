@@ -22,7 +22,7 @@ public class Main {
 	    
 		
 		// STARTUP: Load all the date from the files into memory.
-		List<Student> studentsList = dataManager.loadStudents();
+		dataManager.loadStudents();
 		
 		String adminInput;
 		
@@ -41,6 +41,7 @@ public class Main {
 		
 		// Escaped do-while loop. Now SHUTDOWN: Save the final data from memory back to the files.
 		//dataManager.saveData();
+		dataManager.writeStudentsToFile();
 		stream.println("Data was saved. Good-bye!");
 	}
 	
@@ -59,7 +60,7 @@ public class Main {
 	 * Gets the next menu choice from the admin.
 	 */
 	private static String getAdminInput() {
-		stream.println("Выбор: ");
+		stream.print("Выбор: ");
 		return scnr.nextLine();
 	}
 	
@@ -68,49 +69,75 @@ public class Main {
 	 * @param adminInput should be 1,2,3 or q.
 	 */
 	private static void processAdminInput(String adminInput) {
-		//Option 1: SHOW ALL STUDENTS.
+	  //Option 1: SHOW ALL STUDENTS.
 		if (adminInput.equals("1")) {
+			for (Student student : dataManager.getStudentList()) {
+				stream.println(student.toString());
+			}
 			
-			
-			
+	  // Option 2: ????	
 		} else if (adminInput.equals("2")) {
 		
-		// Option 3: CREATE NEW STUDENT.
+	  // Option 3: CREATE NEW STUDENT.
 		} else if (adminInput.equals("3")) {
-		// Get frist and last name.
+			// Get frist and last name.
 			stream.print("Имя Фамилия: ");
 			String name = scnr.nextLine();
 			
-		// Get telegram nickname.
+			// Get telegram nickname.
 			stream.print("Телеграм ник: ");
 			String telegramNick = scnr.nextLine();
 			
-		// Get phone number.
+			// Get phone number.
 			stream.print("Номер телефона: ");
 			String phoneNumber = scnr.nextLine();
 			
 			// Get payment amount.
-			stream.print("Сумма платежа: ");
-			int payment = scnr.nextInt();
+			int payment = 0; // default value;
 			
-		// Create course now or skip for later.
-			String courseChoiceInput = scnr.nextLine();
+			while (true) {
+				stream.print("Сумма платежа: ");
+				String inputLine = scnr.nextLine(); // Read the full line
+				
+				try {
+					// Try to convert input string to an integer.
+					payment = Integer.parseInt(inputLine);
+					
+					// If it succeds, break out of the loop.
+					break;
+				} catch (NumberFormatException e) {
+					// If it fails, print an error and the loop will automatically repeat.
+					stream.println("Неверный ввод. Пожалуйста, введите целое число.");
+				}
+			}
 			
 			// Choose when to create a course: now or then.
+			String courseChoiceInput;
 			do {
 				stream.print("Создать курс [s]ейчас или [p]озже: ");
 				courseChoiceInput = scnr.nextLine();
 			} while (!courseChoiceInput.equals("s") && !courseChoiceInput.equals("p"));
 			
-			// Create a course object.
+			// Create a course object. TO-DO!!!
+			Course course = null;
+			
 			if (courseChoiceInput.equals("s")) {
 				//Course course = createNewCourse();
 			} else if (courseChoiceInput.equals("p")) {
-				Course course = null;
+				course = new Course(); //FOR TESTING!!!
 			}
 			
 		// Assign student id.
 			// TO-DO:
+			
+			// 1. Create the new Student object with the collected data.
+			Student newStudent = new Student(name, telegramNick, phoneNumber, payment, course);
+			
+			// 2. Add the new student to the list in DataManager.
+			dataManager.addStudent(newStudent);
+			
+			// 3. Confirm that the student was created.
+		    stream.println("Студент " + name + " успешно создан!\n");
 			
 		// Wrong menu input was provided.	
 		} else if (!adminInput.equals("q")) {
@@ -118,27 +145,3 @@ public class Main {
 		} 
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -3,8 +3,11 @@ package botPrototype;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,29 +17,37 @@ import java.util.List;
 public class DataManager {
 	
 	//private Path studentsListPathString = Path.of("programData/studentsList.txt");
+	/**
+	 * File object of the path of the .txt file that keep students data.
+	 */
 	private File studentsListFilePath = new File("programData/studentsList.txt");
-	
+	// "E:\\Programming\\Java\\Eclipse\\TelegramBot_prototype_V.1\\programData\\studentsList.txt"
 	/**
 	 * List to store student objects in memory.
 	 */
 	private List<Student> studentsList = new ArrayList<>();
 	
 	/**
+	 * Symbol to separate entries in fiels.
+	 */
+	private String delimiter = ";";
+	
+// ---------------------- Methods ----------------------------------------------------	
+	
+	/**
 	 * Loads student objects into memory after starting the program by calling helper methods.
 	 * @return List of Student objects.
 	 */
-	public List<Student> loadStudents() {
+	public void loadStudents() {
 		// 1. Call helper method to read Students data from the file.
 		List<String> linesToParse = readStudentsFromFile();
 		
 		// 2. Parse lines to create Student objects.
-		// TO-DO:
-		return null;
+		studentsList = studentsDataParser((ArrayList<String>) linesToParse);
 	}
 	
 	/**
-	 *  Reads the studentsList.txt file, 
-	 * and creates student objects. Then adds them to the studentsList ArrayList.
+	 * Reads the studentsList.txt file, and creates student objects. Then adds them to the studentsList ArrayList.
 	 * I am implementing old, low-level way of interacting with files and reading from it.
 	 * Modern way includes using Path and Files classes but is more "high-level".
 	 * @return List with Student strings, which needed to be parsed into objects.
@@ -97,5 +108,123 @@ public class DataManager {
 		}
 		
 		return lines;
+	}
+	
+	/**
+	 * Takes list of student objects, creates a data string for each student,
+	 * and saves all the strings into list of strings. After, writes every string to the
+	 * file in a manuall "low-level" way for educational purpuses.
+	 */
+	public void writeStudentsToFile() {
+		// StringBuilder object for students data.	
+		StringBuilder sb = new StringBuilder();
+		// List to store all the strings created.
+		ArrayList<String> studentStringsList = new ArrayList<>();
+		
+		// Looping over each student, creating a string, adding to the ArrayList.
+		for (Student student : studentsList) {
+			// Getting all the data.
+			sb.append(student.getName() + delimiter);
+			sb.append(student.getTelegramNick() + delimiter);
+			sb.append(student.getPhoneNumber() + delimiter);
+			sb.append(student.getPayment() + delimiter);
+			sb.append(student.getCourse().dateStarted());
+			
+			// Create a string from the final sb object.
+			String studentDataString = sb.toString();
+			
+			// Add received string to the ArrayList.
+			studentStringsList.add(studentDataString);
+			
+			// Emtying StringBuilder for the next iteration.
+			sb.setLength(0);
+		}
+		
+		// Declaring streams for writing to the file.
+		FileOutputStream fileOutputStream = null;
+		OutputStreamWriter outputStreamWriter = null;
+		PrintWriter printWriter = null;
+		
+		// Chaining streams and writing to the file.
+		try {
+			// 1. Connect to the file with a byte stream.
+			fileOutputStream = new FileOutputStream(studentsListFilePath);
+			
+			// 2. Bridge from characters to bytes using UTF-8 encoding.
+			outputStreamWriter = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
+			
+			// 3. Add buffering and convenient print methods.
+			printWriter = new PrintWriter(outputStreamWriter);
+			
+			// 4. Write each line to the file.
+			for (String line : studentStringsList) {
+				printWriter.println(line);
+			}
+		} catch (IOException e1) {
+			System.err.println("Error writing to the file: " + e1.getMessage());
+		} finally {
+			try {
+				// 5. Manually close every stream in reverse order of creation.
+				if (printWriter != null) {
+					printWriter.close();
+				}
+				if (outputStreamWriter != null) {
+					outputStreamWriter.close();
+				}
+				if (fileOutputStream != null) {
+					fileOutputStream.close();
+				}
+				
+			} catch (IOException e2) {
+				System.err.println("Error closing the streams: " + e2.getMessage());
+			}
+		}	
+	}
+	
+	/**
+	 * Creates student objects from the data in strings.
+	 * @param linesToParse - stores data strings of each student.
+	 * @return
+	 */
+	private ArrayList<Student> studentsDataParser(ArrayList<String> linesToParse) {
+		// ArrayList for storing all the Student objects.
+		ArrayList<Student> studentObjects = new ArrayList<>();
+		
+		// Recreating student objects.
+		for (String studentString : linesToParse) {
+			String[] arr = studentString.split(delimiter);
+			
+			if (arr.length > 0) {
+				String name = arr[0];
+				String telegramNick = arr[1];
+				String phoneNumber = arr[2];
+				int payment = Integer.parseInt(arr[3]);
+				String dateStarted = arr[4];
+				
+				// I create a student but Course object is bogus!!! I will have somehow also have files with Couse
+				// Information of each student, and from these files I will have to recreate course objects.
+				Student student = new Student(name, telegramNick, phoneNumber, payment, new Course());
+				
+				studentObjects.add(student);		
+			}
+		}
+		
+		return studentObjects;
+	}
+	
+	/**
+	 * Getter method for studentList
+	 * @return list with student objects.
+	 */
+	public List<Student> getStudentList() {
+		return studentsList;
+	}
+	
+	/**
+	 * Method to add students to the studentsList.
+	 * @param student
+	 */
+	public void addStudent(Student student) {
+		this.studentsList.add(student);
 	}
 }

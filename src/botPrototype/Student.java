@@ -64,4 +64,9 @@ public class Student {
 	public Course getCourse() {
 		return this.course;
 	}
+	
+	// FOR TESTING PURPOSES.
+	public String toString() {
+		return name + " " + telegramNick;
+	}
 }
