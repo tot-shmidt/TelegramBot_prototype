@@ -141,7 +141,7 @@ public class Main {
 			
 		// Wrong menu input was provided.	
 		} else if (!adminInput.equals("q")) {
-			stream.println("\"" + adminInput + "\"" + " is a wrong input! Type in [1],[2],[3] or [q]:\n");
+			stream.println("\n\"" + adminInput + "\"" + " is a wrong input! Type in [1],[2],[3] or [q]:\n");
 		} 
 	}
 }
