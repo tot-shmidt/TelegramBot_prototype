@@ -14,23 +14,27 @@ public class Course {
 	 */
 	private boolean isActive;
 	/**
-	 * Number of current week.
+	 * Index of current week.
 	 */
-	private int currentWeek;
+	private int currentWeekIndex;
 	
 	/**
 	 * List to store all the weeks of the course.
 	 */
-	private ArrayList<Week> weekList;
+	private ArrayList<AbstractWeek> weekList;
+	
+	
 	/**
 	 * Constructor for the Course object.
 	 */
 	public Course() {
-		courseCreated = Instant.now();
-		isActive = true;
-		currentWeek = 1;
+		this.courseCreated = Instant.now();
+		this.isActive = true;
+		this.currentWeekIndex = 0;
+		this.weekList = addWeeks();
 	}
 	
+// --- END OF FIELDS ---
 	
 	
 	
