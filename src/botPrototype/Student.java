@@ -65,8 +65,10 @@ public class Student {
 		return this.course;
 	}
 	
-	// FOR TESTING PURPOSES.
+	@Override
 	public String toString() {
-		return name + " " + telegramNick;
+		// The pattern is %[flags][width]specifier. - is left allignment. 20 - number of chars. s - Stirng type.
+		String formatStr = "%-20s %-20s %-15s %10s";
+		return String.format(formatStr, this.name, this.telegramNick, this.phoneNumber, this.payment);
 	}
 }

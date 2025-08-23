@@ -49,7 +49,7 @@ public class Main {
      * Displays the main menu to the user.
      */
 	private static void displayMenu() {
-		stream.println("--- MENU ---\n");
+		stream.println("\n--- MENU ---\n");
 		stream.println("[1] - Список всех студентов");
 		stream.println("[2] - Действия со студентом");
 		stream.println("[3] - Создать нового студента");
@@ -71,6 +71,16 @@ public class Main {
 	private static void processAdminInput(String adminInput) {
 	  //Option 1: SHOW ALL STUDENTS.
 		if (adminInput.equals("1")) {
+			// Define the header format (must match the toString() format)
+			String headerFormat = "\n%-20s %-20s %-15s %10s";
+			
+			// Print the header.
+			System.out.println(String.format(headerFormat, "Name", "Telegram", "Phone", "Payment"));
+			
+			// Print a separator line
+		    System.out.println("-".repeat(68)); // 20 + 20 + 15 + 10 + 3 spaces = 68
+		    
+		    // Loop through and print each student. The toString() method will do the formatting.
 			for (Student student : dataManager.getStudentList()) {
 				stream.println(student.toString());
 			}
@@ -118,13 +128,13 @@ public class Main {
 				courseChoiceInput = scnr.nextLine();
 			} while (!courseChoiceInput.equals("s") && !courseChoiceInput.equals("p"));
 			
-			// Create a course object. TO-DO!!!
+			// Create a course object.
 			Course course = null;
 			
 			if (courseChoiceInput.equals("s")) {
-				//Course course = createNewCourse();
+				course = new Course();
 			} else if (courseChoiceInput.equals("p")) {
-				course = new Course(); //FOR TESTING!!!
+				System.out.println("Cousre will be created later.");
 			}
 			
 		// Assign student id.

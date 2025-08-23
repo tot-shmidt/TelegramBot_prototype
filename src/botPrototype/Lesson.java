@@ -27,7 +27,7 @@ public class Lesson {
 		this.sendAfter = sendAfter;
 	}
 	
-// --- Getters and Setters ---
+	// --- Getters and Setters ---
 	/**
 	 * Returns contents of the lesson.
 	 * @return

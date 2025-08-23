@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,12 +124,26 @@ public class DataManager {
 		
 		// Looping over each student, creating a string, adding to the ArrayList.
 		for (Student student : studentsList) {
-			// Getting all the data.
+			// Getting all the Student data.
 			sb.append(student.getName() + delimiter);
 			sb.append(student.getTelegramNick() + delimiter);
 			sb.append(student.getPhoneNumber() + delimiter);
 			sb.append(student.getPayment() + delimiter);
-			sb.append(student.getCourse().dateStarted());
+			
+			// Getting studen's Course data.
+			Course course = student.getCourse();
+			
+			if (course != null) {
+				// Add CourseCreated and WeekIndex to the String.
+				sb.append(course.getCourseCreated().toString() + delimiter);
+				sb.append(course.getCurrentWeekIndex() + delimiter);
+				sb.append(course.isActive() + delimiter);
+				
+				// Get StartTime of the current week and add it to the String.
+				if (course.getCurrentWeek() != null && course.getCurrentWeek().getStartTime() != null) {
+					sb.append(course.getCurrentWeek().getStartTime().toString());
+				}
+			}
 			
 			// Create a string from the final sb object.
 			String studentDataString = sb.toString();
@@ -192,20 +207,37 @@ public class DataManager {
 		
 		// Recreating student objects.
 		for (String studentString : linesToParse) {
-			String[] arr = studentString.split(delimiter);
-			
-			if (arr.length > 0) {
-				String name = arr[0];
-				String telegramNick = arr[1];
-				String phoneNumber = arr[2];
-				int payment = Integer.parseInt(arr[3]);
-				String dateStarted = arr[4];
+			try {
+				String[] arr = studentString.split(delimiter);
 				
-				// I create a student but Course object is bogus!!! I will have somehow also have files with Couse
-				// Information of each student, and from these files I will have to recreate course objects.
-				Student student = new Student(name, telegramNick, phoneNumber, payment, new Course());
-				
-				studentObjects.add(student);		
+				if (arr.length > 0) {
+					// Student part.
+					String name = arr[0];
+					String telegramNick = arr[1];
+					String phoneNumber = arr[2];
+					int payment = Integer.parseInt(arr[3]);
+					
+					// Course part.
+					String dateStartedString = arr[4];
+					Instant courseStartedInstant = Instant.parse(dateStartedString);
+					
+					int currentWeekIndex = Integer.parseInt(arr[5]);
+					
+					boolean isActive = Boolean.parseBoolean(arr[6]);
+					
+					String dateWeekStartedString = arr[7];
+					Instant weekStartedInstant = Instant.parse(dateWeekStartedString);
+					
+					// Recreate Course object.
+					Course course = new Course(courseStartedInstant, currentWeekIndex, isActive, weekStartedInstant);
+					// Recreate Student object.
+					Student student = new Student(name, telegramNick, phoneNumber, payment, course);
+					
+					studentObjects.add(student);		
+				}	
+			} catch (Exception e) {
+				// Catch any error (bad number, bad date, etc.)
+		        System.err.println("Skipping corrupted line in students file: " + studentString);
 			}
 		}
 		

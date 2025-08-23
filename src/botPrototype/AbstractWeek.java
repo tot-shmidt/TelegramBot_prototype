@@ -27,6 +27,10 @@ public abstract class AbstractWeek {
 		return startTime;
 	}
 	
+	public void setStartTime(Instant startTime) {
+		this.startTime = startTime;
+	}
+	
 	public ArrayList<Lesson> getLessons() {
 		return lessons;
 	}
